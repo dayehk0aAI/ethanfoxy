@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>跟小狐狸說英文</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#BFE7F5;--sky2:#9FD8ED;--card:#fff;--ink:#20344E;--ink-soft:#5B6E85;
+    --sun:#FFC93C;--coral:#FF7A6B;--coral-deep:#F0574A;--grass:#3FC286;
+    --shadow:0 10px 0 rgba(32,52,78,.10),0 18px 30px rgba(32,52,78,.14);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{font-family:"Noto Sans TC",system-ui,sans-serif;color:var(--ink);
+    background:linear-gradient(180deg,var(--sky),var(--sky2) 60%,#CFEFDB);background-attachment:fixed;}
+  .display{font-family:"Baloo 2","Noto Sans TC",sans-serif;}
+  .wrap{max-width:520px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;padding:16px 18px 26px;}
+  .brand{display:flex;align-items:center;gap:8px;font-family:"Baloo 2";font-weight:800;font-size:19px;}
+  .brand .dot{width:32px;height:32px;border-radius:50%;background:var(--sun);display:grid;place-items:center;font-size:19px;box-shadow:0 4px 0 #f5a623;}
+
+  /* 小狐狸舞台 */
+  .stage{position:relative;height:150px;display:grid;place-items:center;margin:6px 0;}
+  .buddy{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 50% 38%,#fff,#FFF0D6);
+    display:grid;place-items:center;font-size:66px;box-shadow:var(--shadow);position:relative;transition:transform .2s;}
+
+  /* 情緒動畫 */
+  .buddy.listening{transform:scale(1.05);}
+  .buddy.listening::before{content:"";position:absolute;inset:-6px;border-radius:50%;border:5px solid var(--coral);opacity:.6;animation:ring 1.4s ease-out infinite;}
+  @keyframes ring{0%{transform:scale(1);opacity:.6;}100%{transform:scale(1.5);opacity:0;}}
+  .buddy.wave{animation:wave .6s ease-in-out 2;}
+  @keyframes wave{0%,100%{transform:rotate(0);}25%{transform:rotate(-12deg);}75%{transform:rotate(12deg);}}
+  .buddy.happy{animation:bounce .5s ease 2;}
+  @keyframes bounce{0%,100%{transform:translateY(0);}40%{transform:translateY(-16px) scale(1.05);}}
+  .buddy.shy{animation:shy .8s ease;}
+  @keyframes shy{0%{transform:scale(1);}50%{transform:scale(.82) translateY(8px);}100%{transform:scale(1);}}
+  .buddy.think{animation:think 1.2s ease-in-out;}
+  @keyframes think{0%,100%{transform:rotate(0);}30%{transform:rotate(-10deg);}60%{transform:rotate(-10deg);}}
+  .buddy.cheer{animation:cheer .5s ease 3;}
+  @keyframes cheer{0%,100%{transform:translateY(0) rotate(0);}30%{transform:translateY(-20px) rotate(-8deg);}60%{transform:translateY(-20px) rotate(8deg);}}
+
+  .chat{flex:1;display:flex;flex-direction:column;gap:12px;padding:6px 2px 18px;overflow-y:auto;}
+  .row{display:flex;gap:8px;align-items:flex-end;}
+  .row.me{flex-direction:row-reverse;}
+  .av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:22px;background:#fff;box-shadow:0 4px 0 rgba(32,52,78,.08);flex:none;}
+  .bubble{max-width:76%;padding:12px 15px;border-radius:20px;font-weight:700;font-size:16px;line-height:1.45;box-shadow:var(--shadow);}
+  .fox .bubble{background:#fff;border-bottom-left-radius:6px;}
+  .me .bubble{background:var(--coral);color:#fff;border-bottom-right-radius:6px;}
+  .thinking .bubble{color:var(--ink-soft);font-style:italic;}
+
+  .controls{display:flex;gap:12px;margin-top:8px;}
+  .btn{border:none;cursor:pointer;font-family:"Baloo 2","Noto Sans TC",sans-serif;font-weight:800;border-radius:20px;padding:16px;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s;}
+  .btn:active{transform:translateY(4px);}
+  .btn-speak{flex:2;background:var(--coral);color:#fff;box-shadow:0 6px 0 var(--coral-deep);}
+  .btn-speak.rec{background:var(--coral-deep);}
+  .btn-type{flex:1;background:#fff;color:var(--ink);box-shadow:0 6px 0 rgba(32,52,78,.12);}
+  .typerow{display:none;gap:8px;margin-top:8px;}
+  .typerow input{flex:1;border:none;border-radius:16px;padding:14px;font-size:16px;font-family:inherit;box-shadow:inset 0 0 0 2px rgba(32,52,78,.12);}
+  .typerow button{border:none;background:var(--grass);color:#fff;border-radius:16px;padding:0 18px;font-weight:800;font-family:inherit;}
+
+  .setup{background:#FFF7DC;border-radius:16px;padding:12px 14px;font-size:13px;font-weight:700;color:#8a6d1f;margin-bottom:10px;line-height:1.6;}
+  .burst{position:fixed;inset:0;pointer-events:none;z-index:50;}
+  .flake{position:absolute;font-size:26px;animation:fall 1.1s ease-out forwards;}
+  @keyframes fall{0%{transform:translateY(-20px) scale(.4);opacity:0;}20%{opacity:1;}100%{transform:translateY(120px) scale(1.1) rotate(40deg);opacity:0;}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="dot">🦊</span><span class="display">說英文小狐狸</span></div>
+
+  <div class="setup" id="setup">
+    ⚙️ 使用前：把下面程式裡的 <b>GAS_URL</b> 換成你部署後的網址，這段提示就會消失。
+  </div>
+
+  <div class="stage"><div class="buddy" id="buddy">🦊</div></div>
+  <div class="chat" id="chat"></div>
+
+  <div class="controls">
+    <button class="btn btn-speak" id="speakBtn">🎤 換我說</button>
+    <button class="btn btn-type" id="typeToggle">⌨️ 打字</button>
+  </div>
+  <div class="typerow" id="typerow">
+    <input id="typeInput" placeholder="打字跟小狐狸說…" />
+    <button id="sendBtn">送出</button>
+  </div>
+</div>
+
+<script>
+/* ====== 設定：換成你的 GAS 網址 ====== */
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyGrkIhDAFZeW-MqaA4iTMHsvvdOscr4Mh4bfxwsEaAWD0lQ3gBQoCNnS_u76vWqhsW/exec";
+const CHILD_ID = "demo";
+const SCENARIO = "";
+/* ==================================== */
+
+if (GAS_URL.indexOf("http") === 0) document.getElementById("setup").style.display = "none";
+
+const chat = document.getElementById("chat");
+const buddy = document.getElementById("buddy");
+const history = [];
+
+/* ---- 情緒標籤 → 小狐狸表情 ---- */
+const FACE = { wave:"🦊", happy:"😄", shy:"🙈", think:"🤔", cheer:"🎉" };
+
+function playEmotion(tag){
+  buddy.className = "buddy"; // reset
+  void buddy.offsetWidth;    // 重觸發動畫
+  if(FACE[tag]) buddy.textContent = FACE[tag];
+  if(tag) buddy.classList.add(tag);
+  if(tag === "cheer") burst();
+  // 動畫結束回到預設臉
+  setTimeout(()=>{ buddy.textContent = "🦊"; }, 1600);
+}
+
+/* ---- 解析回話：抽出情緒標籤、清乾淨文字 ---- */
+function parseReply(raw){
+  // 找第一個 [tag] 當主要情緒
+  const m = raw.match(/\[(wave|happy|shy|think|cheer)\]/i);
+  const emotion = m ? m[1].toLowerCase() : "happy";
+  // 移除所有 [tag] 和 *動作* 殘留
+  const clean = raw.replace(/\[(wave|happy|shy|think|cheer)\]/ig, "").replace(/\*[^*]*\*/g, "").replace(/\n{2,}/g,"\n").trim();
+  return { emotion, clean };
+}
+
+/* ---- 顯示訊息 ---- */
+function addMsg(text, who){
+  const row = document.createElement("div");
+  row.className = "row " + (who === "me" ? "me" : "fox") + (who === "thinking" ? " thinking" : "");
+  const av = who === "me" ? "🧒" : "🦊";
+  row.innerHTML = `<div class="av">${av}</div><div class="bubble">${text.replace(/\n/g,"<br>")}</div>`;
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+  return row;
+}
+
+/* ---- 唸英文 ---- */
+let enVoice=null;
+function pickVoice(){ const vs=speechSynthesis.getVoices(); enVoice=vs.find(v=>/en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null; }
+if("speechSynthesis" in window){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+function speak(text){
+  if(!("speechSynthesis" in window)) return;
+  const u=new SpeechSynthesisUtterance(text.replace(/^(Foxy:|Bunny:)/gm,"").trim());
+  u.lang="en-US"; if(enVoice)u.voice=enVoice; u.rate=0.85; u.pitch=1.15;
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+}
+
+/* ---- 呼叫後端 ---- */
+async function askFox(userText){
+  addMsg(userText, "me");
+  history.push({role:"user", text:userText});
+  const thinking = addMsg("小狐狸想一想…", "thinking");
+  playEmotion("think");
+  try{
+    const res = await fetch(GAS_URL, {
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify({ childId:CHILD_ID, message:userText, scenario:SCENARIO, history:history })
+    });
+    const data = await res.json();
+    thinking.remove();
+    if(data.error){ addMsg("哎呀，小狐狸累了 😅（"+data.error+"）","fox"); return; }
+    const { emotion, clean } = parseReply(data.reply || "…");
+    addMsg(clean, "fox");
+    history.push({role:"assistant", text:data.reply}); // 存原文（含標籤）給模型
+    playEmotion(emotion);
+    speak(clean);
+  }catch(err){
+    thinking.remove();
+    addMsg("連不上小狐狸 😢 檢查 GAS_URL","fox");
+  }
+}
+
+/* ---- 語音辨識 ---- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog=null, listening=false;
+if(SR){
+  recog=new SR(); recog.lang="en-US"; recog.interimResults=false; recog.maxAlternatives=1;
+  recog.onresult=(e)=>{ askFox(e.results[0][0].transcript); };
+  recog.onerror=()=>stopUI(); recog.onend=()=>stopUI();
+}
+function stopUI(){ listening=false; const b=document.getElementById("speakBtn"); b.classList.remove("rec"); b.textContent="🎤 換我說"; buddy.className="buddy"; buddy.textContent="🦊"; }
+document.getElementById("speakBtn").onclick=()=>{
+  if(!recog){ alert("這個瀏覽器不支援語音，改用打字"); return; }
+  if(listening){ recog.stop(); return; }
+  speechSynthesis.cancel();
+  try{ recog.start(); listening=true;
+    const b=document.getElementById("speakBtn"); b.classList.add("rec"); b.textContent="⏺ 聽你說…";
+    buddy.className="buddy listening"; buddy.textContent="👂";
+  }catch(e){}
+};
+
+/* ---- 打字 ---- */
+document.getElementById("typeToggle").onclick=()=>{ const r=document.getElementById("typerow"); r.style.display=r.style.display==="flex"?"none":"flex"; };
+function sendType(){ const inp=document.getElementById("typeInput"); const t=inp.value.trim(); if(!t)return; inp.value=""; askFox(t); }
+document.getElementById("sendBtn").onclick=sendType;
+document.getElementById("typeInput").addEventListener("keydown",e=>{ if(e.key==="Enter")sendType(); });
+
+/* ---- 星星特效 ---- */
+function burst(){
+  const layer=document.createElement("div"); layer.className="burst"; document.body.appendChild(layer);
+  const emos=["⭐","🌟","✨","🎈"];
+  for(let i=0;i<12;i++){ const f=document.createElement("div"); f.className="flake"; f.textContent=emos[i%emos.length];
+    f.style.left=(15+Math.random()*70)+"%"; f.style.top=(8+Math.random()*15)+"%"; f.style.animationDelay=(Math.random()*.25)+"s"; layer.appendChild(f); }
+  setTimeout(()=>layer.remove(),1300);
+}
+
+/* ---- 開場 ---- */
+window.addEventListener("load", ()=>{ if(GAS_URL.indexOf("http")===0) askFox("Hi!"); });
+</script>
+</body>
+</html>
