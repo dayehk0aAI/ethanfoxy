@@ -9,7 +9,7 @@
 <style>
   :root{
     --sky:#BFE7F5;--sky2:#9FD8ED;--card:#fff;--ink:#20344E;--ink-soft:#5B6E85;
-    --sun:#FFC93C;--coral:#FF7A6B;--coral-deep:#F0574A;--grass:#3FC286;
+    --sun:#FFC93C;--coral:#FF7A6B;--coral-deep:#F0574A;--grass:#3FC286;--grape:#7C6BE0;
     --shadow:0 10px 0 rgba(32,52,78,.10),0 18px 30px rgba(32,52,78,.14);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -21,34 +21,41 @@
   .brand{display:flex;align-items:center;gap:8px;font-family:"Baloo 2";font-weight:800;font-size:19px;}
   .brand .dot{width:32px;height:32px;border-radius:50%;background:var(--sun);display:grid;place-items:center;font-size:19px;box-shadow:0 4px 0 #f5a623;}
 
-  /* 小狐狸舞台 */
-  .stage{position:relative;height:150px;display:grid;place-items:center;margin:6px 0;}
-  .buddy{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 50% 38%,#fff,#FFF0D6);
-    display:grid;place-items:center;font-size:66px;box-shadow:var(--shadow);position:relative;transition:transform .2s;}
+  .topics{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 4px;-webkit-overflow-scrolling:touch;}
+  .topic{flex:none;border:none;cursor:pointer;background:#fff;border-radius:16px;padding:9px 14px;font-family:"Baloo 2","Noto Sans TC",sans-serif;font-weight:800;font-size:15px;box-shadow:0 5px 0 rgba(32,52,78,.10);display:flex;align-items:center;gap:6px;transition:transform .1s;}
+  .topic:active{transform:translateY(3px);}
+  .topic.on{background:var(--sun);box-shadow:0 5px 0 #f5a623;}
 
-  /* 情緒動畫 */
+  .stage{position:relative;height:140px;display:flex;justify-content:center;gap:24px;align-items:flex-end;margin:6px 0;}
+  .buddy{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;font-size:56px;box-shadow:var(--shadow);position:relative;transition:transform .2s;}
+  #foxy{background:radial-gradient(circle at 50% 38%,#fff,#FFF0D6);}
+  #bunny{background:radial-gradient(circle at 50% 38%,#fff,#F0ECFB);}
+  .label{position:absolute;bottom:-6px;font-family:"Baloo 2";font-weight:800;font-size:13px;background:#fff;padding:2px 10px;border-radius:999px;box-shadow:0 3px 0 rgba(32,52,78,.08);}
+
   .buddy.listening{transform:scale(1.05);}
   .buddy.listening::before{content:"";position:absolute;inset:-6px;border-radius:50%;border:5px solid var(--coral);opacity:.6;animation:ring 1.4s ease-out infinite;}
   @keyframes ring{0%{transform:scale(1);opacity:.6;}100%{transform:scale(1.5);opacity:0;}}
   .buddy.wave{animation:wave .6s ease-in-out 2;}
   @keyframes wave{0%,100%{transform:rotate(0);}25%{transform:rotate(-12deg);}75%{transform:rotate(12deg);}}
   .buddy.happy{animation:bounce .5s ease 2;}
-  @keyframes bounce{0%,100%{transform:translateY(0);}40%{transform:translateY(-16px) scale(1.05);}}
+  @keyframes bounce{0%,100%{transform:translateY(0);}40%{transform:translateY(-14px) scale(1.05);}}
   .buddy.shy{animation:shy .8s ease;}
   @keyframes shy{0%{transform:scale(1);}50%{transform:scale(.82) translateY(8px);}100%{transform:scale(1);}}
   .buddy.think{animation:think 1.2s ease-in-out;}
-  @keyframes think{0%,100%{transform:rotate(0);}30%{transform:rotate(-10deg);}60%{transform:rotate(-10deg);}}
+  @keyframes think{0%,100%{transform:rotate(0);}30%,60%{transform:rotate(-10deg);}}
   .buddy.cheer{animation:cheer .5s ease 3;}
-  @keyframes cheer{0%,100%{transform:translateY(0) rotate(0);}30%{transform:translateY(-20px) rotate(-8deg);}60%{transform:translateY(-20px) rotate(8deg);}}
+  @keyframes cheer{0%,100%{transform:translateY(0) rotate(0);}30%{transform:translateY(-18px) rotate(-8deg);}60%{transform:translateY(-18px) rotate(8deg);}}
+  .buddy.dim{opacity:.45;transform:scale(.92);}
 
-  .chat{flex:1;display:flex;flex-direction:column;gap:12px;padding:6px 2px 18px;overflow-y:auto;}
+  .chat{flex:1;display:flex;flex-direction:column;gap:10px;padding:10px 2px 18px;overflow-y:auto;}
   .row{display:flex;gap:8px;align-items:flex-end;}
   .row.me{flex-direction:row-reverse;}
-  .av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:22px;background:#fff;box-shadow:0 4px 0 rgba(32,52,78,.08);flex:none;}
-  .bubble{max-width:76%;padding:12px 15px;border-radius:20px;font-weight:700;font-size:16px;line-height:1.45;box-shadow:var(--shadow);}
-  .fox .bubble{background:#fff;border-bottom-left-radius:6px;}
+  .av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:20px;background:#fff;box-shadow:0 4px 0 rgba(32,52,78,.08);flex:none;}
+  .bubble{max-width:76%;padding:11px 15px;border-radius:20px;font-weight:700;font-size:16px;line-height:1.45;box-shadow:var(--shadow);}
+  .foxy .bubble{background:#fff;border-bottom-left-radius:6px;}
+  .bunny .bubble{background:#F4F0FF;border-bottom-left-radius:6px;}
   .me .bubble{background:var(--coral);color:#fff;border-bottom-right-radius:6px;}
-  .thinking .bubble{color:var(--ink-soft);font-style:italic;}
+  .thinking .bubble{color:var(--ink-soft);font-style:italic;background:#fff;}
 
   .controls{display:flex;gap:12px;margin-top:8px;}
   .btn{border:none;cursor:pointer;font-family:"Baloo 2","Noto Sans TC",sans-serif;font-weight:800;border-radius:20px;padding:16px;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s;}
@@ -75,7 +82,18 @@
     ⚙️ 使用前：把下面程式裡的 <b>GAS_URL</b> 換成你部署後的網址，這段提示就會消失。
   </div>
 
-  <div class="stage"><div class="buddy" id="buddy">🦊</div></div>
+  <div class="topics" id="topics">
+    <button class="topic" data-topic="今天一起去踢足球，聊球和運動的字">⚽ 踢足球</button>
+    <button class="topic" data-topic="今天一起去超市買食物，學食物和水果的字">🛒 超市</button>
+    <button class="topic" data-topic="今天一起學顏色，聊各種顏色">🎨 顏色</button>
+    <button class="topic" data-topic="今天一起聊食物，學好吃的東西的字">🍎 食物</button>
+    <button class="topic" data-topic="今天一起認識動物，學動物的字">🐶 動物</button>
+  </div>
+
+  <div class="stage">
+    <div class="buddy" id="foxy">🦊<span class="label">Foxy</span></div>
+    <div class="buddy" id="bunny">🐰<span class="label">Bunny</span></div>
+  </div>
   <div class="chat" id="chat"></div>
 
   <div class="controls">
@@ -92,122 +110,121 @@
 /* ====== 設定：換成你的 GAS 網址 ====== */
 const GAS_URL = "https://script.google.com/macros/s/AKfycbyGrkIhDAFZeW-MqaA4iTMHsvvdOscr4Mh4bfxwsEaAWD0lQ3gBQoCNnS_u76vWqhsW/exec";
 const CHILD_ID = "demo";
-const SCENARIO = "";
 /* ==================================== */
 
 if (GAS_URL.indexOf("http") === 0) document.getElementById("setup").style.display = "none";
 
 const chat = document.getElementById("chat");
-const buddy = document.getElementById("buddy");
+const foxyEl = document.getElementById("foxy");
+const bunnyEl = document.getElementById("bunny");
 const history = [];
+let SCENARIO = "";
 
-/* ---- 情緒標籤 → 小狐狸表情 ---- */
-const FACE = { wave:"🦊", happy:"😄", shy:"🙈", think:"🤔", cheer:"🎉" };
+const FACE = {
+  foxy: { wave:"🦊", happy:"😄", shy:"🙊", think:"🤔", cheer:"🎉", idle:"🦊" },
+  bunny:{ wave:"🐰", happy:"😊", shy:"🙈", think:"🤔", cheer:"🎉", idle:"🐰" },
+};
 
-function playEmotion(tag){
-  buddy.className = "buddy"; // reset
-  void buddy.offsetWidth;    // 重觸發動畫
-  if(FACE[tag]) buddy.textContent = FACE[tag];
-  if(tag) buddy.classList.add(tag);
+function animate(who, tag){
+  const el = who === "bunny" ? bunnyEl : foxyEl;
+  const other = who === "bunny" ? foxyEl : bunnyEl;
+  el.className = "buddy"; void el.offsetWidth;
+  const set = FACE[who] || FACE.foxy;
+  el.firstChild.nodeValue = set[tag] || set.idle;
+  el.classList.add(tag || "happy");
+  other.classList.add("dim");
   if(tag === "cheer") burst();
-  // 動畫結束回到預設臉
-  setTimeout(()=>{ buddy.textContent = "🦊"; }, 1600);
+  setTimeout(()=>{ el.firstChild.nodeValue = set.idle; other.classList.remove("dim"); }, 1600);
 }
 
-/* ---- 解析回話：抽出情緒標籤、清乾淨文字 ---- */
-function parseReply(raw){
-  // 找第一個 [tag] 當主要情緒
-  const m = raw.match(/\[(wave|happy|shy|think|cheer)\]/i);
-  const emotion = m ? m[1].toLowerCase() : "happy";
-  // 移除所有 [tag] 和 *動作* 殘留
-  const clean = raw.replace(/\[(wave|happy|shy|think|cheer)\]/ig, "").replace(/\*[^*]*\*/g, "").replace(/\n{2,}/g,"\n").trim();
-  return { emotion, clean };
+function parseTurns(raw){
+  const lines = raw.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+  const turns = [];
+  lines.forEach(line=>{
+    const m = line.match(/^(Foxy|Bunny)\s*:\s*(?:\[(wave|happy|shy|think|cheer)\])?\s*(.*)$/i);
+    if(m){ const text=m[3].replace(/\*[^*]*\*/g,"").trim(); if(text) turns.push({who:m[1].toLowerCase(),tag:(m[2]||"happy").toLowerCase(),text}); }
+    else { const t=line.replace(/\[(wave|happy|shy|think|cheer)\]/ig,"").replace(/\*[^*]*\*/g,"").trim(); if(t) turns.push({who:"foxy",tag:"happy",text:t}); }
+  });
+  return turns.length ? turns : [{who:"foxy",tag:"happy",text:raw.trim()}];
 }
 
-/* ---- 顯示訊息 ---- */
-function addMsg(text, who){
-  const row = document.createElement("div");
-  row.className = "row " + (who === "me" ? "me" : "fox") + (who === "thinking" ? " thinking" : "");
-  const av = who === "me" ? "🧒" : "🦊";
-  row.innerHTML = `<div class="av">${av}</div><div class="bubble">${text.replace(/\n/g,"<br>")}</div>`;
-  chat.appendChild(row);
-  chat.scrollTop = chat.scrollHeight;
-  return row;
+function addBubble(who, text){
+  const row=document.createElement("div"); row.className="row "+(who==="me"?"me":who);
+  const av=who==="me"?"🧒":(who==="bunny"?"🐰":"🦊");
+  row.innerHTML=`<div class="av">${av}</div><div class="bubble">${text}</div>`;
+  chat.appendChild(row); chat.scrollTop=chat.scrollHeight; return row;
 }
 
-/* ---- 唸英文 ---- */
+function playTurns(turns){
+  let i=0;
+  (function next(){ if(i>=turns.length)return; const t=turns[i++];
+    addBubble(t.who,t.text); animate(t.who,t.tag); speak(t.text, ()=>setTimeout(next,250)); })();
+}
+
 let enVoice=null;
 function pickVoice(){ const vs=speechSynthesis.getVoices(); enVoice=vs.find(v=>/en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null; }
 if("speechSynthesis" in window){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
-function speak(text){
-  if(!("speechSynthesis" in window)) return;
-  const u=new SpeechSynthesisUtterance(text.replace(/^(Foxy:|Bunny:)/gm,"").trim());
-  u.lang="en-US"; if(enVoice)u.voice=enVoice; u.rate=0.85; u.pitch=1.15;
-  speechSynthesis.cancel(); speechSynthesis.speak(u);
-}
+function speak(text, done){ if(!("speechSynthesis" in window)){ if(done)done(); return; }
+  const u=new SpeechSynthesisUtterance(text); u.lang="en-US"; if(enVoice)u.voice=enVoice; u.rate=0.85; u.pitch=1.15;
+  u.onend=()=>{ if(done)done(); }; speechSynthesis.speak(u); }
 
-/* ---- 呼叫後端 ---- */
 async function askFox(userText){
-  addMsg(userText, "me");
-  history.push({role:"user", text:userText});
-  const thinking = addMsg("小狐狸想一想…", "thinking");
-  playEmotion("think");
+  addBubble("me", userText); history.push({role:"user", text:userText});
+  const thinking=document.createElement("div"); thinking.className="row thinking";
+  thinking.innerHTML=`<div class="av">🦊</div><div class="bubble">想一想…</div>`;
+  chat.appendChild(thinking); chat.scrollTop=chat.scrollHeight; animate("foxy","think");
   try{
-    const res = await fetch(GAS_URL, {
-      method:"POST",
-      headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body: JSON.stringify({ childId:CHILD_ID, message:userText, scenario:SCENARIO, history:history })
-    });
-    const data = await res.json();
-    thinking.remove();
-    if(data.error){ addMsg("哎呀，小狐狸累了 😅（"+data.error+"）","fox"); return; }
-    const { emotion, clean } = parseReply(data.reply || "…");
-    addMsg(clean, "fox");
-    history.push({role:"assistant", text:data.reply}); // 存原文（含標籤）給模型
-    playEmotion(emotion);
-    speak(clean);
-  }catch(err){
-    thinking.remove();
-    addMsg("連不上小狐狸 😢 檢查 GAS_URL","fox");
-  }
+    const res=await fetch(GAS_URL,{ method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify({ childId:CHILD_ID, message:userText, scenario:SCENARIO, history:history }) });
+    const data=await res.json(); thinking.remove();
+    if(data.error){ addBubble("foxy","哎呀，小狐狸累了 😅（"+data.error+"）"); return; }
+    speechSynthesis.cancel(); history.push({role:"assistant", text:data.reply});
+    playTurns(parseTurns(data.reply || "…"));
+  }catch(err){ thinking.remove(); addBubble("foxy","連不上小狐狸 😢 檢查 GAS_URL"); }
 }
 
-/* ---- 語音辨識 ---- */
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+document.querySelectorAll(".topic").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll(".topic").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on");
+    SCENARIO = b.dataset.topic;
+    history.length = 0; chat.innerHTML = "";
+    askFox("Hi! Let's start.");
+  };
+});
+
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 let recog=null, listening=false;
-if(SR){
-  recog=new SR(); recog.lang="en-US"; recog.interimResults=false; recog.maxAlternatives=1;
-  recog.onresult=(e)=>{ askFox(e.results[0][0].transcript); };
-  recog.onerror=()=>stopUI(); recog.onend=()=>stopUI();
-}
-function stopUI(){ listening=false; const b=document.getElementById("speakBtn"); b.classList.remove("rec"); b.textContent="🎤 換我說"; buddy.className="buddy"; buddy.textContent="🦊"; }
+if(SR){ recog=new SR(); recog.lang="en-US"; recog.interimResults=false; recog.maxAlternatives=1;
+  recog.onresult=(e)=>{ askFox(e.results[0][0].transcript); }; recog.onerror=()=>stopUI(); recog.onend=()=>stopUI(); }
+function stopUI(){ listening=false; const b=document.getElementById("speakBtn"); b.classList.remove("rec"); b.textContent="🎤 換我說"; foxyEl.className="buddy"; foxyEl.firstChild.nodeValue="🦊"; }
 document.getElementById("speakBtn").onclick=()=>{
   if(!recog){ alert("這個瀏覽器不支援語音，改用打字"); return; }
-  if(listening){ recog.stop(); return; }
-  speechSynthesis.cancel();
-  try{ recog.start(); listening=true;
-    const b=document.getElementById("speakBtn"); b.classList.add("rec"); b.textContent="⏺ 聽你說…";
-    buddy.className="buddy listening"; buddy.textContent="👂";
-  }catch(e){}
+  if(listening){ recog.stop(); return; } speechSynthesis.cancel();
+  try{ recog.start(); listening=true; const b=document.getElementById("speakBtn"); b.classList.add("rec"); b.textContent="⏺ 聽你說…"; foxyEl.className="buddy listening"; }catch(e){}
 };
 
-/* ---- 打字 ---- */
 document.getElementById("typeToggle").onclick=()=>{ const r=document.getElementById("typerow"); r.style.display=r.style.display==="flex"?"none":"flex"; };
 function sendType(){ const inp=document.getElementById("typeInput"); const t=inp.value.trim(); if(!t)return; inp.value=""; askFox(t); }
 document.getElementById("sendBtn").onclick=sendType;
 document.getElementById("typeInput").addEventListener("keydown",e=>{ if(e.key==="Enter")sendType(); });
 
-/* ---- 星星特效 ---- */
-function burst(){
-  const layer=document.createElement("div"); layer.className="burst"; document.body.appendChild(layer);
-  const emos=["⭐","🌟","✨","🎈"];
-  for(let i=0;i<12;i++){ const f=document.createElement("div"); f.className="flake"; f.textContent=emos[i%emos.length];
-    f.style.left=(15+Math.random()*70)+"%"; f.style.top=(8+Math.random()*15)+"%"; f.style.animationDelay=(Math.random()*.25)+"s"; layer.appendChild(f); }
-  setTimeout(()=>layer.remove(),1300);
-}
+function burst(){ const layer=document.createElement("div"); layer.className="burst"; document.body.appendChild(layer);
+  const emos=["⭐","🌟","✨","🎈"]; for(let i=0;i<12;i++){ const f=document.createElement("div"); f.className="flake"; f.textContent=emos[i%emos.length];
+    f.style.left=(15+Math.random()*70)+"%"; f.style.top=(8+Math.random()*15)+"%"; f.style.animationDelay=(Math.random()*.25)+"s"; layer.appendChild(f);} setTimeout(()=>layer.remove(),1300); }
 
-/* ---- 開場 ---- */
-window.addEventListener("load", ()=>{ if(GAS_URL.indexOf("http")===0) askFox("Hi!"); });
+async function boot(){
+  if(GAS_URL.indexOf("http")!==0) return;
+  try{
+    const res = await fetch(GAS_URL + "?childId=" + encodeURIComponent(CHILD_ID));
+    const data = await res.json();
+    if(data && data.today_topic){ SCENARIO = data.today_topic;
+      document.querySelectorAll(".topic").forEach(b=>{ if(b.dataset.topic.indexOf(data.today_topic)>=0) b.classList.add("on"); });
+    }
+  }catch(e){}
+  askFox("Hi!");
+}
+window.addEventListener("load", boot);
 </script>
 </body>
 </html>
