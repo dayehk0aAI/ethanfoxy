@@ -139,7 +139,7 @@ function parseTurns(raw){
   lines.forEach(line=>{
     const m = line.match(/^(Foxy|Bunny)\s*:\s*(?:\[(wave|happy|shy|think|cheer)\])?\s*(.*)$/i);
     if(m){ const text=m[3].replace(/\*[^*]*\*/g,"").trim(); if(text) turns.push({who:m[1].toLowerCase(),tag:(m[2]||"happy").toLowerCase(),text}); }
-    else { const t=line.replace(/\[(wave|happy|shy|think|cheer)\]/ig,"").replace(/\*[^*]*\*/g,"").trim(); if(t) turns.push({who:"foxy",tag:"happy",text:t}); }
+    else { const t=line.replace(/\[(wave|happy|shy|think|cheer)\]/ig,"").replace(/\*[^*]*\*/g,"").trim(); if(t && /[a-zA-Z\u4e00-\u9fff]/.test(t)) turns.push({who:"foxy",tag:"happy",text:t}); }
   });
   return turns.length ? turns : [{who:"foxy",tag:"happy",text:raw.trim()}];
 }
