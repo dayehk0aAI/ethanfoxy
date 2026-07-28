@@ -21,8 +21,8 @@
   .brand{display:flex;align-items:center;gap:8px;font-family:"Baloo 2";font-weight:800;font-size:19px;}
   .brand .dot{width:32px;height:32px;border-radius:50%;background:var(--sun);display:grid;place-items:center;font-size:19px;box-shadow:0 4px 0 #f5a623;}
 
-  .topics{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 4px;-webkit-overflow-scrolling:touch;}
-  .topic{flex:none;border:none;cursor:pointer;background:#fff;border-radius:16px;padding:9px 14px;font-family:"Baloo 2","Noto Sans TC",sans-serif;font-weight:800;font-size:15px;box-shadow:0 5px 0 rgba(32,52,78,.10);display:flex;align-items:center;gap:6px;transition:transform .1s;}
+  .topics{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 4px;-webkit-overflow-scrolling:touch;min-height:44px;}
+  .topic{flex:none;border:none;cursor:pointer;background:#fff;border-radius:16px;padding:9px 14px;font-family:"Baloo 2","Noto Sans TC",sans-serif;font-weight:800;font-size:15px;box-shadow:0 5px 0 rgba(32,52,78,.10);display:flex;align-items:center;gap:6px;transition:transform .1s;white-space:nowrap;}
   .topic:active{transform:translateY(3px);}
   .topic.on{background:var(--sun);box-shadow:0 5px 0 #f5a623;}
 
@@ -82,13 +82,8 @@
     ⚙️ 使用前：把下面程式裡的 <b>GAS_URL</b> 換成你部署後的網址，這段提示就會消失。
   </div>
 
-  <div class="topics" id="topics">
-    <button class="topic" data-topic="今天一起去踢足球，聊球和運動的字">⚽ 踢足球</button>
-    <button class="topic" data-topic="今天一起去超市買食物，學食物和水果的字">🛒 超市</button>
-    <button class="topic" data-topic="今天一起學顏色，聊各種顏色">🎨 顏色</button>
-    <button class="topic" data-topic="今天一起聊食物，學好吃的東西的字">🍎 食物</button>
-    <button class="topic" data-topic="今天一起認識動物，學動物的字">🐶 動物</button>
-  </div>
+  <!-- 主題按鈕：從後端 topics 分頁動態載入 -->
+  <div class="topics" id="topics"></div>
 
   <div class="stage">
     <div class="buddy" id="foxy">🦊<span class="label">Foxy</span></div>
@@ -117,6 +112,7 @@ if (GAS_URL.indexOf("http") === 0) document.getElementById("setup").style.displa
 const chat = document.getElementById("chat");
 const foxyEl = document.getElementById("foxy");
 const bunnyEl = document.getElementById("bunny");
+const topicsEl = document.getElementById("topics");
 const history = [];
 let SCENARIO = "";
 
@@ -183,15 +179,22 @@ async function askFox(userText){
   }catch(err){ thinking.remove(); addBubble("foxy","連不上小狐狸 😢 檢查 GAS_URL"); }
 }
 
-document.querySelectorAll(".topic").forEach(b=>{
-  b.onclick=()=>{
-    document.querySelectorAll(".topic").forEach(x=>x.classList.remove("on"));
-    b.classList.add("on");
-    SCENARIO = b.dataset.topic;
-    history.length = 0; chat.innerHTML = "";
-    askFox("Hi! Let's start.");
-  };
-});
+/* 動態生成主題按鈕 */
+function buildTopics(list){
+  topicsEl.innerHTML = "";
+  (list||[]).forEach(t=>{
+    const b=document.createElement("button");
+    b.className="topic"; b.textContent=(t.emoji?t.emoji+" ":"")+t.label;
+    b.dataset.topic=t.topic;
+    b.onclick=()=>{
+      document.querySelectorAll(".topic").forEach(x=>x.classList.remove("on"));
+      b.classList.add("on");
+      SCENARIO=t.topic; history.length=0; chat.innerHTML="";
+      askFox("Hi! Let's start.");
+    };
+    topicsEl.appendChild(b);
+  });
+}
 
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 let recog=null, listening=false;
@@ -213,11 +216,13 @@ function burst(){ const layer=document.createElement("div"); layer.className="bu
   const emos=["⭐","🌟","✨","🎈"]; for(let i=0;i<12;i++){ const f=document.createElement("div"); f.className="flake"; f.textContent=emos[i%emos.length];
     f.style.left=(15+Math.random()*70)+"%"; f.style.top=(8+Math.random()*15)+"%"; f.style.animationDelay=(Math.random()*.25)+"s"; layer.appendChild(f);} setTimeout(()=>layer.remove(),1300); }
 
+/* 開場：向後端要今日主題 + 主題清單 */
 async function boot(){
   if(GAS_URL.indexOf("http")!==0) return;
   try{
     const res = await fetch(GAS_URL + "?childId=" + encodeURIComponent(CHILD_ID));
     const data = await res.json();
+    buildTopics(data.topics);
     if(data && data.today_topic){ SCENARIO = data.today_topic;
       document.querySelectorAll(".topic").forEach(b=>{ if(b.dataset.topic.indexOf(data.today_topic)>=0) b.classList.add("on"); });
     }
