@@ -82,7 +82,6 @@
     ⚙️ 使用前：把下面程式裡的 <b>GAS_URL</b> 換成你部署後的網址，這段提示就會消失。
   </div>
 
-  <!-- 主題按鈕：從後端 topics 分頁動態載入 -->
   <div class="topics" id="topics"></div>
 
   <div class="stage">
@@ -133,13 +132,20 @@ function animate(who, tag){
   setTimeout(()=>{ el.firstChild.nodeValue = set.idle; other.classList.remove("dim"); }, 1600);
 }
 
+/* 解析回話：拆角色 + 情緒；過濾掉沒有文字（如 ---、單一符號）的行 */
+function hasText(s){ return /[a-zA-Z\u4e00-\u9fff0-9]/.test(s); }
 function parseTurns(raw){
   const lines = raw.split(/\n+/).map(s=>s.trim()).filter(Boolean);
   const turns = [];
   lines.forEach(line=>{
     const m = line.match(/^(Foxy|Bunny)\s*:\s*(?:\[(wave|happy|shy|think|cheer)\])?\s*(.*)$/i);
-    if(m){ const text=m[3].replace(/\*[^*]*\*/g,"").trim(); if(text) turns.push({who:m[1].toLowerCase(),tag:(m[2]||"happy").toLowerCase(),text}); }
-    else { const t=line.replace(/\[(wave|happy|shy|think|cheer)\]/ig,"").replace(/\*[^*]*\*/g,"").trim(); if(t && /[a-zA-Z\u4e00-\u9fff]/.test(t)) turns.push({who:"foxy",tag:"happy",text:t}); }
+    if(m){
+      const text=m[3].replace(/\*[^*]*\*/g,"").trim();
+      if(text && hasText(text)) turns.push({who:m[1].toLowerCase(),tag:(m[2]||"happy").toLowerCase(),text});
+    } else {
+      const t=line.replace(/\[(wave|happy|shy|think|cheer)\]/ig,"").replace(/\*[^*]*\*/g,"").trim();
+      if(t && hasText(t)) turns.push({who:"foxy",tag:"happy",text:t});
+    }
   });
   return turns.length ? turns : [{who:"foxy",tag:"happy",text:raw.trim()}];
 }
@@ -216,7 +222,6 @@ function burst(){ const layer=document.createElement("div"); layer.className="bu
   const emos=["⭐","🌟","✨","🎈"]; for(let i=0;i<12;i++){ const f=document.createElement("div"); f.className="flake"; f.textContent=emos[i%emos.length];
     f.style.left=(15+Math.random()*70)+"%"; f.style.top=(8+Math.random()*15)+"%"; f.style.animationDelay=(Math.random()*.25)+"s"; layer.appendChild(f);} setTimeout(()=>layer.remove(),1300); }
 
-/* 開場：向後端要今日主題 + 主題清單 */
 async function boot(){
   if(GAS_URL.indexOf("http")!==0) return;
   try{
